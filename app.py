@@ -38,22 +38,11 @@ if __name__ == '__main__':
     )
     st.line_chart(top_5_lang_df)
 
-    st.header('Top 5 Most Used Licenses')
-    top_5_licenses = repo['licence'].value_counts().head(5)
-    st.bar_chart(top_5_licenses, color='#eba715')
-
-    st.header('Popularity of the Top 5 Most Used Licenses')
-
-    top_5_licenses_df = (
-        repo.loc[repo['licence'].isin(top_5_licenses.index)]
-        .assign(year=repo['created_at'].str[:4])
-        .query('year != "2023"')
-        .groupby(['year', 'licence'])
-        .size()
-        .reset_index(name='count')
-        .pivot(index='year', columns='licence', values='count')
-    )
-    st.line_chart(top_5_licenses_df)
+    st.header('Top 10 Most Starred Repositories')
+    st.bar_chart(repo[['name', 'stars_count', 'commit_count']]
+                 .sort_values('stars_count', ascending=False)
+                 .head(10).set_index('name'),
+                 y=['stars_count', 'commit_count'])
 
     tab1, tab2 = st.tabs(['Yearly', 'Monthly'])
     with tab1:
