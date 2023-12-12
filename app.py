@@ -38,18 +38,6 @@ if __name__ == '__main__':
     )
     st.line_chart(top_5_lang_df)
 
-    st.header('Top 10 Most Starred Repositories')
-    st.bar_chart(repo[['name', 'stars_count', 'commit_count']]
-                 .sort_values('stars_count', ascending=False)
-                 .head(10).set_index('name'),
-                 y=['stars_count', 'commit_count'])
-
-    st.header('Top 10 Most Forked Repositories')
-    st.bar_chart(repo[['name', 'forks_count', 'pull_requests']]
-                 .sort_values('forks_count', ascending=False)
-                 .head(10).set_index('name'),
-                 y=['forks_count', 'pull_requests'])
-
     st.header('Top 5 Most Used Licenses')
     top_5_licenses = repo['licence'].value_counts().head(5)
     st.bar_chart(top_5_licenses, color='#eba715')
