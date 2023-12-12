@@ -5,7 +5,7 @@ import streamlit as st
 @st.cache_data(show_spinner="Loading Data...")
 def load_data(url):
     data = pd.read_csv(url, usecols=['name', 'created_at', 'licence', 'primary_language',
-                                     'stars_count', 'forks_count', 'commit_count', 'pull_requests'])
+                                     'stars_count', 'commit_count'])
     return data
 
 
@@ -15,15 +15,13 @@ if __name__ == '__main__':
     st.divider()
 
     repo = load_data('data/repository_data.csv')
+
     col1, col2, col3, col4 = st.columns(4)
     total = repo.shape[0]
     col1.metric('Total Repositories', total)
     col2.metric('Total Languages', repo['primary_language'].nunique())
     col3.metric('Total Licenses', repo['licence'].nunique())
     col4.download_button('Download Data', 'data/repository_data.csv')
-
-    st.header('Top 10 Most Frequently Used Programming Language on Github')
-    st.bar_chart(repo['primary_language'].value_counts().head(10), color='#eba715')
 
     st.header('Popularity of the Top 5 Most Used Programming Languages Over Time')
     top_5_lang = repo['primary_language'].value_counts().head(5).index
@@ -52,6 +50,6 @@ if __name__ == '__main__':
         st.bar_chart(year_data, color='#ff9a47')
     with tab2:
         st.header("Number of Repositories Made in Each Month")
-        repo.loc[:, 'month'] = repo['created_at'].str[4:7]
+        repo.loc[:, 'month'] = repo['created_at'].str[5:7]
         month_data = repo['month'].value_counts().sort_index()
         st.bar_chart(month_data, color='#ff4747')
