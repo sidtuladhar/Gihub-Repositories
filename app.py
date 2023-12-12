@@ -3,8 +3,9 @@ import streamlit as st
 
 
 @st.cache_data(show_spinner="Loading Data...")
-def load_data():
-    data = pd.read_csv('data/repository_data.csv')
+def load_data(url):
+    data = pd.read_csv(url, usecols=['name', 'created_at', 'licence', 'primary_language',
+                                     'stars_count', 'forks_count', 'commit_count', 'pull_requests'])
     return data
 
 
@@ -13,7 +14,7 @@ if __name__ == '__main__':
     st.subheader('By Sid Tuladhar')
     st.divider()
 
-    repo = load_data()
+    repo = load_data('data/repository_data.csv')
     col1, col2, col3, col4 = st.columns(4)
     total = repo.shape[0]
     col1.metric('Total Repositories', total)
@@ -27,7 +28,7 @@ if __name__ == '__main__':
     st.header('Popularity of the Top 5 Most Used Programming Languages Over Time')
     top_5_lang = repo['primary_language'].value_counts().head(5).index
     top_5_lang_df = (
-        repo.loc[repo['primary_language'].isin(top_5_lang)].copy()
+        repo.loc[repo['primary_language'].isin(top_5_lang)]
         .assign(year=repo['created_at'].str[:4])
         .query('year != "2023"')
         .groupby(['year', 'primary_language'])
@@ -50,12 +51,13 @@ if __name__ == '__main__':
                  y=['forks_count', 'pull_requests'])
 
     st.header('Top 5 Most Used Licenses')
-    st.bar_chart(repo['licence'].value_counts().head(5), color='#eba715')
+    top_5_licenses = repo['licence'].value_counts().head(5)
+    st.bar_chart(top_5_licenses, color='#eba715')
 
     st.header('Popularity of the Top 5 Most Used Licenses')
-    top_5_licenses = repo['licence'].value_counts().head(5).index
+
     top_5_licenses_df = (
-        repo.loc[repo['licence'].isin(top_5_licenses)].copy()
+        repo.loc[repo['licence'].isin(top_5_licenses.index)]
         .assign(year=repo['created_at'].str[:4])
         .query('year != "2023"')
         .groupby(['year', 'licence'])
